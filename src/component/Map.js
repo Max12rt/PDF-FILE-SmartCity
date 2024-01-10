@@ -10,8 +10,6 @@ import "leaflet-control-geocoder/dist/Control.Geocoder";
 import MevoParking from "../mevoParking";
 
 export default function Map({ coords, display_name, placeName }) {
-    //var waypoints = []; // array of marked points 
-
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
     const [showMapView, setShowMapView] = useState(false);
     const [waypoints, setWaypoints] = useState([]);
@@ -77,6 +75,7 @@ export default function Map({ coords, display_name, placeName }) {
             }
     
             var Point = [markerLat, markerLng];
+            
             if (Point) {
                 setWaypoints(prevWaypoints => [...prevWaypoints, Point]);
                 console.log("Point's Coordinates appended:", Point);
@@ -84,7 +83,7 @@ export default function Map({ coords, display_name, placeName }) {
                 console.error("Point's coordinates are not available.");
             }
         } catch (error) {
-            console.error('Error adding marker:', error);
+            console.error('Error adding waypoint:', error);
         }
     };
 
@@ -92,19 +91,17 @@ export default function Map({ coords, display_name, placeName }) {
 
     function MapView() {
         const map = useMap();
-         //NEW CODE
 
-            const waypointsArray = waypoints.map(coords => L.latLng(coords[0], coords[1]));
-    
-            L.Routing.control({
-                waypoints: waypointsArray,
-                routeWhileDragging: true,
-                geocoder: L.Control.Geocoder.nominatim()
-            }).addTo(map);
-    
-            console.log("Visible!");
+        const waypointsArray = waypoints.map(coords => L.latLng(coords[0], coords[1]));
 
-        //NEW CODE END
+        L.Routing.control({
+            waypoints: waypointsArray,
+            routeWhileDragging: true,
+            geocoder: L.Control.Geocoder.nominatim()
+        }).addTo(map);
+
+        console.log("Number of points: ", waypoints.length);
+
         map.setView([latitude, longitude], map.getZoom());
         setShowMapView(false); // Hide the MapView after rendering
 
@@ -116,19 +113,6 @@ export default function Map({ coords, display_name, placeName }) {
             setShowMapView(true); // Show the MapView component when waypoints are present
         }
     }, [waypoints]);
-
-    useEffect(() => {
-        async function fetchMevoParking() {
-            try {
-                const mevoParkingResult = await MevoParking();
-                console.log(mevoParkingResult);
-            } catch (error) {
-                console.error('Error fetching MevoParking:', error);
-            }
-        }
-
-        fetchMevoParking();
-    }, []); // Empty dependency array to run only once when the component mounts */
 
     return (
         <MapContainer
@@ -150,12 +134,14 @@ export default function Map({ coords, display_name, placeName }) {
                     <Popup>Point of Interest</Popup>
                 </Marker>
             ))}
-            {
-                console.log(MevoParking())
-
-            }
+            
             <MevoParking />
             <MapView />
         </MapContainer>
     );
+    /*
+    {
+                console.log(MevoParking())
+
+            }*/
 }
