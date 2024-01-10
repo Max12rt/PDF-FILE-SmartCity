@@ -6,7 +6,7 @@ import icon from "../images/icon.png";
 import L from "leaflet";
 import "leaflet-routing-machine/dist/leaflet-routing-machine"; 
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css"; // Add this line for CSS
-//import MevoParking from "../mevoParking";
+import MevoParking from "../mevoParking";
 
 export default function Map({ coords, display_name, placeName }) {
     var waypoints = []; // array of marked points 
@@ -68,8 +68,9 @@ export default function Map({ coords, display_name, placeName }) {
                 let userCoordinates = [position.coords.latitude, position.coords.longitude];
 
                 if (userCoordinates) {
-                    console.log("User's Coordinates appended:", userCoordinates);
                     waypoints.push(userCoordinates);
+                    console.log("User's Coordinates appended:", userCoordinates);
+                    console.log("New number of points: ", waypoints.length);
                 } else {
                     console.error("User's coordinates are not available.");
                 }
@@ -77,8 +78,9 @@ export default function Map({ coords, display_name, placeName }) {
 
             var Point = [markerLat,markerLng];
             if (Point) {
-                console.log("Point's Coordinates appended:", Point);
                 waypoints.push(Point);
+                console.log("Point's Coordinates appended:", Point);
+                console.log("New number of points: ", waypoints.length);
             } else {
                 console.error("Point's coordinates are not available.");
             }
@@ -113,7 +115,18 @@ export default function Map({ coords, display_name, placeName }) {
         }
     }, [waypoints]);
 
-    //mevo
+    useEffect(() => {
+        async function fetchMevoParking() {
+            try {
+                const mevoParkingResult = await MevoParking();
+                console.log(mevoParkingResult);
+            } catch (error) {
+                console.error('Error fetching MevoParking:', error);
+            }
+        }
+
+        fetchMevoParking();
+    }, []); // Empty dependency array to run only once when the component mounts */
 
     return (
         <MapContainer
@@ -135,7 +148,11 @@ export default function Map({ coords, display_name, placeName }) {
                     <Popup>Point of Interest</Popup>
                 </Marker>
             ))}
-            
+            {
+                console.log(MevoParking())
+
+            }
+            <MevoParking />
             <MapView />
         </MapContainer>
     );
