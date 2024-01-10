@@ -103,31 +103,34 @@ export default function App() {
     }
 
     return (
-        <div className="App">
-            <h1>Enter The address</h1>
-            <section className="form-container">
-                <form>
-                    <label>street:</label>
-                    <input
-                        value={address.street}
-                        placeholder="1234 abc street"
-                        onChange={update("street")}
-                        id="street"
-                        type="text"
-                    />
-                    {/* ... (rest of the form inputs) */}
-                    <label>Place Name:</label>
-                    <input
-                        value={placeName}
-                        placeholder="Enter place name"
-                        onChange={handlePlaceNameChange}
-                        id="placeName"
-                        type="text"
-                    />
-                    <button onClick={(e) => submitHandler(e)}>Search</button>
-                </form>
-            </section>
-            <Map coords={coords} display_name={display_name} placeName={placeName} />
-        </div>
+        <React.Fragment>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+            <div className="App">
+                <h1>Enter The address</h1>
+                <section className="form-container">
+                    <form>
+                        <label>street:</label>
+                        <input
+                            value={address.street}
+                            placeholder="1234 abc street"
+                            onChange={update("street")}
+                            id="street"
+                            type="text"
+                        />
+                        {/* ... (rest of the form inputs) */}
+                        <label>Place Name:</label>
+                        <input
+                            value={placeName}
+                            placeholder="Enter place name"
+                            onChange={handlePlaceNameChange}
+                            id="placeName"
+                            type="text"
+                        />
+                        <button onClick={(e) => submitHandler(e)}>Search</button>
+                    </form>
+                </section>
+                <Map coords={coords} display_name={display_name} placeName={placeName} />
+            </div>
+        </React.Fragment>
     );
 }

@@ -1,25 +1,20 @@
-// MevoParking.js
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import L from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import icon from "./images/mevo.png";
 
-export default function MevoParking({ map }) {
-    const iconOptionsMevo = {
-        iconUrl: 'mevo_park.png',
-        iconSize: [32, 25]
-    };
+export default function MevoParking() {
 
-    // Creating a custom icon for Mevo parking
-    const customIconMevo = new L.Icon(iconOptionsMevo);
+    const customIconMevo = new L.Icon({
+        iconUrl: icon,
+        iconSize: [25, 25]
+    });
 
-    const markerOptionsMevo = {
-        title: "mevo_park",
-        clickable: true,
-        icon: customIconMevo
-    };
+    const [coords, setCoords] = useState([]);
 
     async function loadJSON() {
         try {
-            const response = await fetch('coordinates_mevo.json');
+            const response = await fetch('https://gbfs.urbansharing.com/rowermevo.pl/station_information.json');
             const jsonData = await response.json();
             return jsonData;
         } catch (error) {
@@ -32,16 +27,18 @@ export default function MevoParking({ map }) {
         async function displayMevoParking() {
             try {
                 const coordsOfMevo = await loadJSON();
-                for (let mevo of coordsOfMevo) {
-                    L.marker([mevo[0], mevo[1]], markerOptionsMevo).addTo(map);
-                }
+                setCoords(coordsOfMevo["data"]["stations"]);
             } catch (error) {
                 console.error("Failed to display Mevo parking:", error);
             }
         }
 
         displayMevoParking();
-    }, [map, markerOptionsMevo]);
+    }, []);
 
-    return null;
+    return coords.map((mevo) => (
+        <Marker key={mevo.station_id} position={[mevo.lat, mevo.lon]} icon={customIconMevo}>
+            <Popup>{mevo.name}</Popup>
+        </Marker>
+    ));
 }

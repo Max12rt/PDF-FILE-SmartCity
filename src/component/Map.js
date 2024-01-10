@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import icon from "../images/icon.png";
+import icon from "../images/user.jpg";
 import L from "leaflet";
 import MevoParking from "../mevoParking";
 
@@ -35,6 +35,7 @@ export default function Map({ coords, display_name, placeName }) {
                     let nodeId = node.getAttribute('id');
                     let latitude = node.getAttribute('lat');
                     let longitude = node.getAttribute('lon');
+                    console.log(node)
                     nodesInfo.push([latitude, longitude]);
                 }
                 setPointsOfInterest(nodesInfo);
@@ -69,11 +70,16 @@ export default function Map({ coords, display_name, placeName }) {
             <Marker icon={customIcon} position={[latitude, longitude]}>
                 <Popup>{display_name}</Popup>
             </Marker>
+
             {pointsOfInterest.map((poi, index) => (
                 <Marker key={index} position={poi}>
                     <Popup>Point of Interest</Popup>
                 </Marker>
             ))}
+            {
+                console.log(MevoParking())
+
+            }
             <MevoParking />
             <MapView />
         </MapContainer>
