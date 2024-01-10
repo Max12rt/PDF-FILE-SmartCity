@@ -5,6 +5,8 @@ sudo apt upgrade -y
 sudo apt-get install mysql-server -y
 
 sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root1ROOT';"
+sudo mysql -e "FLUSH PRIVILEGES;"
+sudo mysql -e "CREATE DATABASE usof1;"
 
 sudo service mysql restart
 
