@@ -10,10 +10,11 @@ import "leaflet-control-geocoder/dist/Control.Geocoder";
 import MevoParking from "../mevoParking";
 
 export default function Map({ coords, display_name, placeName }) {
-    var waypoints = []; // array of marked points 
+    //var waypoints = []; // array of marked points 
 
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
     const [showMapView, setShowMapView] = useState(false);
+    const [waypoints, setWaypoints] = useState([]);
     const { latitude, longitude } = coords;
 
     const customIcon = new L.Icon({
@@ -63,32 +64,31 @@ export default function Map({ coords, display_name, placeName }) {
 
     const handleMarkerClick = async (markerLat, markerLng) => {
         try {
-            if(waypoints.length === 0)
-            {
+            if (waypoints.length === 0) {
                 let position = await getPosition();
                 let userCoordinates = [position.coords.latitude, position.coords.longitude];
-
+    
                 if (userCoordinates) {
-                    waypoints.push(userCoordinates);
+                    setWaypoints([userCoordinates]);
                     console.log("User's Coordinates appended:", userCoordinates);
-                    console.log("New number of points: ", waypoints.length);
                 } else {
                     console.error("User's coordinates are not available.");
                 }
             }
-
-            var Point = [markerLat,markerLng];
+    
+            var Point = [markerLat, markerLng];
             if (Point) {
-                waypoints.push(Point);
+                setWaypoints(prevWaypoints => [...prevWaypoints, Point]);
                 console.log("Point's Coordinates appended:", Point);
-                console.log("New number of points: ", waypoints.length);
             } else {
                 console.error("Point's coordinates are not available.");
             }
         } catch (error) {
             console.error('Error adding marker:', error);
-    }
+        }
     };
+
+    
 
     function MapView() {
         const map = useMap();
@@ -103,7 +103,7 @@ export default function Map({ coords, display_name, placeName }) {
             }).addTo(map);
     
             console.log("Visible!");
-            
+
         //NEW CODE END
         map.setView([latitude, longitude], map.getZoom());
         setShowMapView(false); // Hide the MapView after rendering
