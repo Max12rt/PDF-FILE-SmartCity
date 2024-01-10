@@ -6,6 +6,7 @@ import icon from "../images/icon.png";
 import L from "leaflet";
 import "leaflet-routing-machine/dist/leaflet-routing-machine"; 
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css"; // Add this line for CSS
+import "leaflet-control-geocoder/dist/Control.Geocoder";
 import MevoParking from "../mevoParking";
 
 export default function Map({ coords, display_name, placeName }) {
@@ -93,15 +94,16 @@ export default function Map({ coords, display_name, placeName }) {
         const map = useMap();
          //NEW CODE
 
-         if (waypoints.length > 0) {
             const waypointsArray = waypoints.map(coords => L.latLng(coords[0], coords[1]));
     
             L.Routing.control({
-                waypoints: waypointsArray
+                waypoints: waypointsArray,
+                routeWhileDragging: true,
+                geocoder: L.Control.Geocoder.nominatim()
             }).addTo(map);
     
             console.log("Visible!");
-        }
+            
         //NEW CODE END
         map.setView([latitude, longitude], map.getZoom());
         setShowMapView(false); // Hide the MapView after rendering
