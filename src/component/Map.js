@@ -2,13 +2,17 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import icon from "../images/user.jpg";
+import icon from "../images/icon.png";
 import L from "leaflet";
-import MevoParking from "../mevoParking";
+import "leaflet-routing-machine/dist/leaflet-routing-machine"; 
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css"; // Add this line for CSS
+//import MevoParking from "../mevoParking";
 
 export default function Map({ coords, display_name, placeName }) {
-    const [pointsOfInterest, setPointsOfInterest] = useState([]);
+    var waypoints = []; // array of marked points 
 
+    const [pointsOfInterest, setPointsOfInterest] = useState([]);
+    const [showMapView, setShowMapView] = useState(false);
     const { latitude, longitude } = coords;
 
     const customIcon = new L.Icon({
@@ -50,11 +54,66 @@ export default function Map({ coords, display_name, placeName }) {
         }
     }, [latitude, longitude, placeName]);
 
+    function getPosition() {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+    }
+
+    const handleMarkerClick = async (markerLat, markerLng) => {
+        try {
+            if(waypoints.length === 0)
+            {
+                let position = await getPosition();
+                let userCoordinates = [position.coords.latitude, position.coords.longitude];
+
+                if (userCoordinates) {
+                    console.log("User's Coordinates appended:", userCoordinates);
+                    waypoints.push(userCoordinates);
+                } else {
+                    console.error("User's coordinates are not available.");
+                }
+            }
+
+            var Point = [markerLat,markerLng];
+            if (Point) {
+                console.log("Point's Coordinates appended:", Point);
+                waypoints.push(Point);
+            } else {
+                console.error("Point's coordinates are not available.");
+            }
+        } catch (error) {
+            console.error('Error adding marker:', error);
+    }
+    };
+
     function MapView() {
         const map = useMap();
+         //NEW CODE
+
+         if (waypoints.length > 0) {
+            const waypointsArray = waypoints.map(coords => L.latLng(coords[0], coords[1]));
+    
+            L.Routing.control({
+                waypoints: waypointsArray
+            }).addTo(map);
+    
+            console.log("Visible!");
+        }
+        //NEW CODE END
         map.setView([latitude, longitude], map.getZoom());
+        setShowMapView(false); // Hide the MapView after rendering
+
         return null;
     }
+
+    useEffect(() => {
+        if (waypoints.length > 0) {
+            setShowMapView(true); // Show the MapView component when waypoints are present
+        }
+    }, [waypoints]);
+
+    //mevo
 
     return (
         <MapContainer
@@ -72,15 +131,11 @@ export default function Map({ coords, display_name, placeName }) {
             </Marker>
 
             {pointsOfInterest.map((poi, index) => (
-                <Marker key={index} position={poi}>
+                <Marker key={index} position={poi} eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }}>
                     <Popup>Point of Interest</Popup>
                 </Marker>
             ))}
-            {
-                console.log(MevoParking())
-
-            }
-            <MevoParking />
+            
             <MapView />
         </MapContainer>
     );
