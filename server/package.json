@@ -1,41 +1,15 @@
 {
-  "name": "usof-backend",
+  "name": "server",
   "version": "1.0.0",
-  "browserslist": "> 0.2%, not dead, not ie <= 11, not op_mini all",
-  "description": "create an API for a future question and answer service for professional and enthusiast programmers",
-  "main": "app.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js",
-    "start": "node app.js",
-    "client": "node --experimental-modules client/src/App.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "usof",
-    "ucode",
-    "backend"
-  ],
-  "author": "Maksym Tsiupa",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.2",
-    "bcrypt": "^5.1.1",
-    "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "dotenv": "^8.6.0",
-    "express": "^4.17.1",
-    "express-fileupload": "^1.2.1",
-    "express-session": "^1.17.3",
-    "jsonwebtoken": "^8.5.1",
-    "multer": "^1.4.2",
-    "mysql2": "^2.2.5",
-    "nodemailer": "^6.5.0",
-    "nodemon": "^2.0.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.19.0",
-    "react-scripts": "^5.0.1",
-    "sequelize": "^6.5.0"
+    "express": "^4.18.2"
   }
 }
