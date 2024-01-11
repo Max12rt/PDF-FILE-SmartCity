@@ -5,11 +5,14 @@ import "leaflet/dist/leaflet.css";
 import icon from "../images/user.jpg";
 import L from "leaflet";
 import MevoParking from "../mevoParking";
+import TierParking from "../tierParking";
 
 export default function Map({ coords, display_name, placeName }) {
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
 
     const { latitude, longitude } = coords;
+    // let lat = coords.latitude;
+    // let lng = coords.longitude;
 
     const customIcon = new L.Icon({
         iconUrl: icon,
@@ -35,7 +38,6 @@ export default function Map({ coords, display_name, placeName }) {
                     let nodeId = node.getAttribute('id');
                     let latitude = node.getAttribute('lat');
                     let longitude = node.getAttribute('lon');
-                    console.log(node)
                     nodesInfo.push([latitude, longitude]);
                 }
                 setPointsOfInterest(nodesInfo);
@@ -63,6 +65,7 @@ export default function Map({ coords, display_name, placeName }) {
             zoom={5}
             scrollWheelZoom={true}
         >
+
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -76,11 +79,8 @@ export default function Map({ coords, display_name, placeName }) {
                     <Popup>Point of Interest</Popup>
                 </Marker>
             ))}
-            {
-                console.log(MevoParking())
-
-            }
             <MevoParking />
+            <TierParking />
             <MapView />
         </MapContainer>
     );
