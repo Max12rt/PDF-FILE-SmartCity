@@ -125,7 +125,6 @@ export default function Map({ coords, display_name, placeName }) {
 
         console.log("Number of points: ", waypoints.length);
 
-        // map.setView([latitude, longitude], map.getZoom());
         setShowMapView(false); // Hide the MapView after rendering
 
         return null;
