@@ -11,6 +11,7 @@ import MevoParking from "../mevoParking";
 
 export default function Map({ coords, display_name, placeName }) {
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
+    const [showMapView, setShowMapView] = useState(false);
     const [waypoints, setWaypoints] = useState([]);
     const { latitude, longitude } = coords;
 
@@ -61,12 +62,12 @@ export default function Map({ coords, display_name, placeName }) {
 
     const handleMarkerClick = async (markerLat, markerLng) => {
         try {
-            if (control.getWaypoints().length === 0) {
+            if (waypoints.length === 0) {
                 let position = await getPosition();
-                var userCoordinates = [position.coords.latitude, position.coords.longitude];
+                let userCoordinates = [position.coords.latitude, position.coords.longitude];
     
                 if (userCoordinates) {
-                    control.spliceWaypoints(control.getWaypoints().length + 1, 1, e.latlng);
+                    setWaypoints([userCoordinates]);
                     console.log("User's Coordinates appended:", userCoordinates);
                 } else {
                     console.error("User's coordinates are not available.");
@@ -74,7 +75,6 @@ export default function Map({ coords, display_name, placeName }) {
             }
     
             var Point = [markerLat, markerLng];
-
             if (Point) {
                 setWaypoints(prevWaypoints => [...prevWaypoints, Point]);
                 console.log("Point's Coordinates appended:", Point);
@@ -91,16 +91,27 @@ export default function Map({ coords, display_name, placeName }) {
     function MapView() {
         const map = useMap();
 
+        const waypointsArray = waypoints.map(coords => L.latLng(coords[0], coords[1]));
+
         L.Routing.control({
-            waypoints: [],
+            waypoints: waypointsArray,
             routeWhileDragging: true,
             geocoder: L.Control.Geocoder.nominatim()
         }).addTo(map);
 
-        console.log("Number of points: ", control.getWaypoints().length);
+        console.log("Number of points: ", waypoints.length);
+
+        map.setView([latitude, longitude], map.getZoom());
+        setShowMapView(false); // Hide the MapView after rendering
 
         return null;
     }
+
+    useEffect(() => {
+        if (waypoints.length > 0) {
+            setShowMapView(true); // Show the MapView component when waypoints are present
+        }
+    }, [waypoints]);
 
     return (
         <MapContainer
@@ -118,8 +129,8 @@ export default function Map({ coords, display_name, placeName }) {
             </Marker>
 
             {pointsOfInterest.map((poi, index) => (
-                <Marker key={index} position={poi} eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }}>
-                    <Popup>Point of Interest</Popup>
+                <Marker key={index} position={poi} /*eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }}*/ >
+                    <Popup>You are GAY</Popup>
                 </Marker>
             ))}
             
