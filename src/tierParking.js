@@ -23,14 +23,11 @@ export default function TierParking() {
             // console.log(r);
             // lat = 52.2297;
             // lng = 18.0122;
-            // let lat = 52.2297;
-            // let lng = 21.0122;
-            // let r = 1000;
 
-            const response = await fetch('https://platform.tier-services.io/v1/vehicle?lat=' + lat + '&lng=' + lng +'&radius='+r, {
-                headers: {'X-Api-Key': 'bpEUTJEBTf74oGRWxaIcW7aeZMzDDODe1yBoSxi2'},
-            });
-            // console.log(response);
+            const response = await fetch('http://127.0.0.1:5000/' + lat + '/' + lng +'/'+r);
+            if (!response.ok) {
+                throw new Error("HTTP error " + response.status);
+            }
             const jsonData = await response.json();
             return jsonData;
         } catch (error) {
@@ -43,6 +40,9 @@ export default function TierParking() {
         async function DisplayTierParking() {
             try {
                 const vehicleData = await useLoadJSON();
+                if (vehicleData.length === 0) {
+                    return;
+                }
                 setCoords(vehicleData["data"]);
             } catch (error) {
                 console.error("Failed to display Tier parking:", error);
@@ -52,10 +52,10 @@ export default function TierParking() {
         DisplayTierParking();
     }, []);
 
-    console.log(coords);
+    console.log(coords.length);
     return coords.map((vehicle) => (
-        <Marker key={vehicle.id} position={[vehicle.attributes.lat, vehicle.attributes.lng]} icon={customIconTier}>
-            <Popup>{vehicle.attributes.licencePlate}</Popup>
+        <Marker position={[vehicle[0], vehicle[1]]} icon={customIconTier}>
+            <Popup>{vehicle[2]}<br/>Battery: {vehicle[3]}</Popup>
         </Marker>
     ));
 }

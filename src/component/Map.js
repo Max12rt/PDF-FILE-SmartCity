@@ -8,6 +8,7 @@ import "leaflet-routing-machine/dist/leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css"; // Add this line for CSS
 import "leaflet-control-geocoder/dist/Control.Geocoder";
 import MevoParking from "../mevoParking";
+import TierParking from "../tierParking";
 
 export default function Map({ coords, display_name, placeName }) {
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
@@ -20,6 +21,16 @@ export default function Map({ coords, display_name, placeName }) {
         iconSize: [25, 35],
         iconAnchor: [5, 30]
     });
+
+    const [tick, setTick] = useState(0); // Add this line
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTick(prevTick => prevTick + 1); // This will cause a re-render every 5 seconds
+        }, 5000);
+
+        return () => clearInterval(timer); // Clean up on unmount
+    }, []);
 
     useEffect(() => {
         async function getPointsOfInterest() {
@@ -39,8 +50,23 @@ export default function Map({ coords, display_name, placeName }) {
                     let nodeId = node.getAttribute('id');
                     let latitude = node.getAttribute('lat');
                     let longitude = node.getAttribute('lon');
+                    let name = '';
+                    let amenity = '';
+                    let wheelchair = '';
+                    for (let j = 0; j < node.children.length; j++) {
+                        let child = node.children[j];
+                        if (child.tagName === 'tag') {
+                            if (child.getAttribute('k') === 'name') {
+                                name = child.getAttribute('v');
+                            } else if (child.getAttribute('k') === 'amenity') {
+                                amenity = child.getAttribute('v');
+                            } else if (child.getAttribute('k') === 'wheelchair') {
+                                wheelchair = child.getAttribute('v');
+                            }
+                        }
+                    }
                     console.log(node)
-                    nodesInfo.push([latitude, longitude]);
+                    nodesInfo.push([latitude, longitude, name, amenity, wheelchair]);
                 }
                 setPointsOfInterest(nodesInfo);
             } catch (error) {
@@ -86,8 +112,6 @@ export default function Map({ coords, display_name, placeName }) {
         }
     };
 
-    
-
     function MapView() {
         const map = useMap();
 
@@ -101,7 +125,7 @@ export default function Map({ coords, display_name, placeName }) {
 
         console.log("Number of points: ", waypoints.length);
 
-        map.setView([latitude, longitude], map.getZoom());
+        // map.setView([latitude, longitude], map.getZoom());
         setShowMapView(false); // Hide the MapView after rendering
 
         return null;
@@ -128,19 +152,19 @@ export default function Map({ coords, display_name, placeName }) {
                 <Popup>{display_name}</Popup>
             </Marker>
 
-            {pointsOfInterest.map((poi, index) => (
-                <Marker key={index} position={poi} eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }} >
-                    <Popup>You are GAY</Popup>
+            {pointsOfInterest.map((poi, index,) => (
+                <Marker
+                    key={index}
+                    position={[poi[0], poi[1]]}
+                    onClick={() => handleMarkerClick(poi[0], poi[1])}
+                >
+                    <Popup>name: {poi[2] ? poi[2] : 'unknown'}<br/>amenity: {poi[3] ? poi[3] : 'unknown'}<br/>wheelchair: {poi[4] ? poi[4] : 'unknown'}</Popup>
                 </Marker>
             ))}
             
             <MevoParking />
+            <TierParking key={tick} /> 
             <MapView />
         </MapContainer>
     );
-    /*
-    {
-                console.log(MevoParking())
-
-            }*/
 }

@@ -1,7 +1,6 @@
 // App.js
 import React, { useEffect, useState } from "react";
 import Map from "./component/Map";
-import MevoParking from "./mevoParking";
 import "./styles.css";
 
 export default function App() {
