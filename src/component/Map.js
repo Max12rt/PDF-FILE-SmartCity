@@ -129,7 +129,7 @@ export default function Map({ coords, display_name, placeName }) {
             </Marker>
 
             {pointsOfInterest.map((poi, index) => (
-                <Marker key={index} position={poi} /*eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }}*/ >
+                <Marker key={index} position={poi} eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }} >
                     <Popup>You are GAY</Popup>
                 </Marker>
             ))}
@@ -143,4 +143,4 @@ export default function Map({ coords, display_name, placeName }) {
                 console.log(MevoParking())
 
             }*/
-        }
+}
