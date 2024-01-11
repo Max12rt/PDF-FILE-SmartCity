@@ -12,7 +12,7 @@ import TierParking from "../tierParking";
 
 export default function Map({ coords, display_name, placeName }) {
     const [pointsOfInterest, setPointsOfInterest] = useState([]);
-    const [showMapView, setShowMapView] = useState(false);
+    //const [showMapView, setShowMapView] = useState(false);
     const [waypoints, setWaypoints] = useState([]);
     const { latitude, longitude } = coords;
 
@@ -22,7 +22,7 @@ export default function Map({ coords, display_name, placeName }) {
         iconAnchor: [5, 30]
     });
 
-    const [tick, setTick] = useState(0); // Add this line
+    const [tick, setTick] = useState(0); 
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -88,6 +88,7 @@ export default function Map({ coords, display_name, placeName }) {
 
     const handleMarkerClick = async (markerLat, markerLng) => {
         try {
+            console.log("Click! Number of waypoints: ", waypoints.length);
             if (waypoints.length === 0) {
                 let position = await getPosition();
                 let userCoordinates = [position.coords.latitude, position.coords.longitude];
@@ -125,16 +126,16 @@ export default function Map({ coords, display_name, placeName }) {
 
         console.log("Number of points: ", waypoints.length);
 
-        setShowMapView(false); // Hide the MapView after rendering
+        //setShowMapView(false); // Hide the MapView after rendering
 
         return null;
     }
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (waypoints.length > 0) {
             setShowMapView(true); // Show the MapView component when waypoints are present
         }
-    }, [waypoints]);
+    }, [waypoints]);*/
 
     return (
         <MapContainer
@@ -155,7 +156,7 @@ export default function Map({ coords, display_name, placeName }) {
                 <Marker
                     key={index}
                     position={[poi[0], poi[1]]}
-                    onClick={() => handleMarkerClick(poi[0], poi[1])}
+                    eventHandlers={{ click: () => handleMarkerClick(poi[0], poi[1]) }}
                 >
                     <Popup>name: {poi[2] ? poi[2] : 'unknown'}<br/>amenity: {poi[3] ? poi[3] : 'unknown'}<br/>wheelchair: {poi[4] ? poi[4] : 'unknown'}</Popup>
                 </Marker>
