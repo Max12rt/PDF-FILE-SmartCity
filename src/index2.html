@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Run JavaScript</title>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+</head>
+
+<body>
+    <div id="map" style="width: 600px; height: 400px;"></div>
+    <script>
+        var iconOptions = {
+            iconUrl: 'pin.png',
+            iconSize: [50, 50]
+        }
+
+        // Creating a custom icon
+        var customIcon = L.icon(iconOptions);
+
+
+        // Options for the marker
+        var markerOptions = {
+            title: "MyLocation",
+            clickable: true,
+            draggable: true,
+            icon: customIcon
+        }
+
+
+
+        var iconOptions = {
+            iconUrl: 'mevo_park.png',
+            iconSize: [32, 25]
+        }
+
+        // Creating a custom icon
+        var customIcon_mevo = L.icon(iconOptions);
+
+
+        // Options for the marker
+        var markerOptions_mevo = {
+            title: "mevo_park",
+            clickable: true,
+            icon: customIcon_mevo
+        }
+
+
+        async function loadJSON() {
+            const response = await fetch('coordinates_mevo.json');
+            const jsonData = await response.json();
+            // console.log(jsonData);
+            return jsonData;
+        }
+
+
+
+
+
+
+        const API_KEY = "Xwjyz_QFW5JNrRzp6X8MDkMjQ1_AvAIdpoJnR9Lgv7U";
+        const SEARCH_RADIUS = 10000;  // 10 km
+
+        async function getParkingInRadius(latitude, longitude, radius, apiKey) {
+            const overpassUrl = `http://overpass-api.de/api/interpreter?data=node[amenity=casino](around:${radius},${latitude},${longitude});out;`;
+            try {
+                const response = await fetch(overpassUrl);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+
+                let nodesInfo = [];
+                let nodes = xmlDoc.getElementsByTagName("node");
+
+                for (let i = 0; i < nodes.length; i++) {
+                    let node = nodes[i];
+                    let nodeId = node.getAttribute('id');
+                    let latitude = node.getAttribute('lat');
+                    let longitude = node.getAttribute('lon');
+                    nodesInfo.push([latitude, longitude]);
+                }
+                console.log(nodesInfo);
+                return nodesInfo;
+            } catch (error) {
+                console.error("Failed to fetch parking data:", error);
+                return [];
+            }
+        }
+
+        function getPosition() {
+            return new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject);
+            });
+        }
+
+        function createMarkerForUser(map, userCoordinates) {
+            L.marker(userCoordinates, markerOptions).addTo(map);
+        }
+
+        async function main() {
+            try {
+                let position = await getPosition();
+                let userCoordinates = [position.coords.latitude, position.coords.longitude];
+
+                if (userCoordinates) {
+                    const parkingData = await getParkingInRadius(userCoordinates[0], userCoordinates[1], SEARCH_RADIUS, API_KEY);
+                    console.log("Parking within 10 km of user:");
+
+                    // Initialize the map and set its view to the user's coordinates
+                    var map = L.map('map').setView(userCoordinates, 13);
+
+                    // Add a tile layer to the map
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19,
+                    }).addTo(map);
+
+                    // Add a marker for each parking node
+                    for (let parkingNode of parkingData) {
+                        L.marker([parkingNode[0], parkingNode[1]]).addTo(map);
+                    }
+                    createMarkerForUser(map, userCoordinates);
+
+
+
+                    let coords_of_mevo = await loadJSON();
+                    console.log(coords_of_mevo);
+                    for (let mevo of coords_of_mevo) {
+                        L.marker([mevo[0], mevo[1]], markerOptions_mevo).addTo(map);
+                    }
+                } else {
+                    console.log("Failed to get user coordinates.");
+                }
+            } catch (error) {
+                console.error("Failed to get user position:", error);
+            }
+        }
+
+        main();
+    </script>
+</body>
+
+</html>

@@ -80,7 +80,7 @@ export default function Map({ coords, display_name, placeName }) {
                 </Marker>
             ))}
             <MevoParking />
-            <TierParking />
+            <TierParking /> 
             <MapView />
         </MapContainer>
     );
