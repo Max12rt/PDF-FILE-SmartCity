@@ -156,12 +156,21 @@ export default function App() {
                                 <h2 className="card-title text-center">Smart City</h2>
                                 <form onSubmit={submitHandler}>
                                     <div className="mb-3">
-                                        <label>Street:</label>
+                                        <label>City:</label>
                                         <input
                                             value={address.city}
-                                            placeholder="town"
+                                            placeholder="city"
                                             onChange={update("city")}
                                             id="city"
+                                            type="text"
+                                            className="form-control"
+                                        />
+                                        <label>Street:</label>
+                                        <input
+                                            value={address.street}
+                                            placeholder="street"
+                                            onChange={update("street")}
+                                            id="street"
                                             type="text"
                                             className="form-control"
                                         />
